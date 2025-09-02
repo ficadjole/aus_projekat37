@@ -1,0 +1,8 @@
+STA 15
+TCP 25252
+
+
+DO_REG  1 2000   0  0      1     0  DO  @StanjeVentila
+DO_REG  1 2002   0  0      1     0  DO  @StanjeGrejaca
+HR_INT  1 1000  0  0   700  650  AO  @NivoVode
+HR_INT  1 1001  0  0   65  22  AO  @TempVazduha
