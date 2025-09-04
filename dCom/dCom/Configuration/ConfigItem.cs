@@ -1,6 +1,8 @@
-﻿using Common;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Net;
+using Common;
+using Modbus.FunctionParameters;
 
 namespace dCom.Configuration
 {
@@ -296,7 +298,9 @@ namespace dCom.Configuration
             }
         }
 
-		private PointType GetRegistryType(string registryTypeName)
+
+
+private PointType GetRegistryType(string registryTypeName)
 		{
 			PointType registryType;
 			switch (registryTypeName)
@@ -324,4 +328,6 @@ namespace dCom.Configuration
 			return registryType;
 		}
 	}
+
+	
 }
