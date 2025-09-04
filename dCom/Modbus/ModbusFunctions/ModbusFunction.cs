@@ -63,17 +63,8 @@ namespace Modbus.ModbusFunctions
 		/// <returns>Command parameters in form of byte array</returns>
 		public abstract byte[] PackRequest();
 
-		/// <summary>
-		/// Converts received message to key-value pairs.
-		/// <param name="response">Message read form socket</param>
-		/// <returns>
-		///		Dictionary that maps tuple to received value from MdbSim:
-		///		Key: Tuple<PointType, ushort> - complex key of point. Points unique identifier
-		///				- PointType - type of point
-		///				- Point address
-		///		Value: Value received from MdbSim
-		/// </returns>
-		public abstract Dictionary<Tuple<PointType, ushort>, ushort> ParseResponse(byte[] response);
+        
+        public abstract Dictionary<Tuple<PointType, ushort>, ushort> ParseResponse(byte[] response);
 
         /// <summary>
         /// Handles the exception
