@@ -144,6 +144,7 @@ namespace ProcessingModule
             point.RawValue = newValue;
             point.Timestamp = DateTime.Now;
             point.EguValue = eguConverter.ConvertToEGU(point.ConfigItem.ScaleFactor, point.ConfigItem.Deviation, point.RawValue);
+            point.Alarm = alarmProcessor.GetAlarmForAnalogPoint(point.EguValue, point.ConfigItem);
         }
 
         /// <inheritdoc />
