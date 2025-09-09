@@ -24,26 +24,21 @@ namespace Modbus.ModbusFunctions
         /// <inheritdoc />
         public override byte[] PackRequest()
         {
-            ModbusWriteCommandParameters readParams = (ModbusWriteCommandParameters)CommandParameters;
+            ModbusWriteCommandParameters write = (ModbusWriteCommandParameters)CommandParameters;
 
             byte[] request = new byte[12];
-            int offset = 0;
 
-            Buffer.BlockCopy(BitConverter.GetBytes(IPAddress.HostToNetworkOrder((short)readParams.TransactionId)), 0, request,0, 2);
-            offset += 2;
-            Buffer.BlockCopy(BitConverter.GetBytes(IPAddress.HostToNetworkOrder((short)readParams.ProtocolId)), 0, request,0, 2);
-            offset += 2;
-            Buffer.BlockCopy(BitConverter.GetBytes(IPAddress.HostToNetworkOrder((short)readParams.Length)), 0, request,4, 2);
-            offset += 2;
-            request[offset++] = readParams.UnitId;
-            request[offset++] = readParams.FunctionCode;
-            Buffer.BlockCopy(BitConverter.GetBytes(IPAddress.HostToNetworkOrder((short)readParams.OutputAddress)), 0, request, 8, 2);
-            offset += 2;
-            Buffer.BlockCopy(BitConverter.GetBytes(IPAddress.HostToNetworkOrder((short)readParams.Value)), 0, request, 10, 2);
-            offset += 2;
+            Buffer.BlockCopy(BitConverter.GetBytes(IPAddress.HostToNetworkOrder((short)write.TransactionId)), 0, request, 0, 2);
+            Buffer.BlockCopy(BitConverter.GetBytes(IPAddress.HostToNetworkOrder((short)write.ProtocolId)), 0, request, 2, 2);
+            Buffer.BlockCopy(BitConverter.GetBytes(IPAddress.HostToNetworkOrder((short)write.Length)), 0, request, 4, 2);
+            request[6] = write.UnitId;
+            request[7] = write.FunctionCode;
+            Buffer.BlockCopy(BitConverter.GetBytes(IPAddress.HostToNetworkOrder((short)write.OutputAddress)), 0, request, 8, 2);
+            Buffer.BlockCopy(BitConverter.GetBytes(IPAddress.HostToNetworkOrder((short)write.Value)), 0, request, 10, 2);
+
 
             return request;
-            
+
         }
 
         /// <inheritdoc />
