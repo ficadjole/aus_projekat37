@@ -73,11 +73,16 @@ namespace ProcessingModule
             {
 				List<IPoint> points = storage.GetPoints(pointIds); //ucitavanje vrednosti
 
+
 				int inicijalnaTemperaturaVazduha = (int)eguConverter.ConvertToEGU(points[3].ConfigItem.ScaleFactor, points[3].ConfigItem.Deviation, points[3].RawValue);
 				int trenutnaTemperaturaVazduha = inicijalnaTemperaturaVazduha;
+				int inicijalniNivoVode = (int)eguConverter.ConvertToEGU(points[2].ConfigItem.ScaleFactor, points[2].ConfigItem.Deviation, points[2].RawValue);
+				int trenutniNivoVode = inicijalniNivoVode;
 
                 int Heating = 0;
 				int Threshold = 57; // prag pozara
+				int Cooling = 4;
+				int Outflow = 10;
 
                 if (points[1].RawValue == 1)
 				{
@@ -99,14 +104,50 @@ namespace ProcessingModule
 
                 }
 
-				if(trenutnaTemperaturaVazduha != inicijalnaTemperaturaVazduha)
+				if (trenutnaTemperaturaVazduha > Threshold)
+				{
+					if (points[1].RawValue != 0) {
+                        processingManager.ExecuteWriteCommand(points[1].ConfigItem, configuration.GetTransactionId(), configuration.UnitAddress, 2002, 0);
+
+                    }
+                    processingManager.ExecuteWriteCommand(points[0].ConfigItem, configuration.GetTransactionId(), configuration.UnitAddress, 2000, 1);
+
+				}
+				else if(trenutnaTemperaturaVazduha < Threshold || points[2].RawValue < 10) {
+					if (points[0].RawValue != 0) {
+                        processingManager.ExecuteWriteCommand(points[0].ConfigItem, configuration.GetTransactionId(), configuration.UnitAddress, 2000, 0);
+                    }
+
+                }
+
+                if (points[0].RawValue == 1 && trenutniNivoVode >= 10)
+				{
+					trenutniNivoVode -= Outflow;
+					trenutnaTemperaturaVazduha -= Cooling;
+
+				}
+
+                if (trenutniNivoVode != inicijalniNivoVode)
+                {
+                    //promena iz egu u raw da bismo mogli da ga upisemo u simulaciju
+
+                    trenutniNivoVode = (int)eguConverter.ConvertToRaw(points[2].ConfigItem.ScaleFactor, points[2].ConfigItem.Deviation, trenutniNivoVode);
+                    processingManager.ExecuteWriteCommand(points[2].ConfigItem, configuration.GetTransactionId(), configuration.UnitAddress, 1000, trenutniNivoVode);
+                }
+
+
+                if (trenutnaTemperaturaVazduha != inicijalnaTemperaturaVazduha)
 				{
 					//promena iz egu u raw da bismo mogli da ga upisemo u simulaciju
+
 					trenutnaTemperaturaVazduha = (int)eguConverter.ConvertToRaw(points[3].ConfigItem.ScaleFactor, points[3].ConfigItem.Deviation, trenutnaTemperaturaVazduha);
 					processingManager.ExecuteWriteCommand(points[3].ConfigItem, configuration.GetTransactionId(), configuration.UnitAddress, 1001, trenutnaTemperaturaVazduha);
 				}
 
-				automationTrigger.WaitOne(10000);
+
+                automationTrigger.WaitOne(1000);
+
+
             }
         }
 
