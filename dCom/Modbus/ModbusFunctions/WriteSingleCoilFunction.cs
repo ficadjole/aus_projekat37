@@ -46,17 +46,11 @@ namespace Modbus.ModbusFunctions
         {
             Dictionary<Tuple<PointType, ushort>, ushort> dictionary = new Dictionary<Tuple<PointType, ushort>, ushort>();
 
-            byte[] tempAddress = new byte[2];
-            byte[] tempValue = new byte[2];
+            ModbusWriteCommandParameters writeParams = (ModbusWriteCommandParameters)CommandParameters;
 
-            tempAddress[0] = response[8];
-            tempValue[1] = response[9];
+            ushort address = (ushort)((response[8] << 8) | response[9]);
 
-            ushort address = BitConverter.ToUInt16(new byte[2] { tempAddress[1], tempAddress[0] }, 0);
-            tempValue[0] = response[10];
-            tempValue[1] = response[11];
-
-            ushort value = BitConverter.ToUInt16(new byte[2] { tempValue[1], tempValue[0] }, 0);
+            ushort value = (ushort)((response[10] << 8) | response[11]);
 
             dictionary.Add(new Tuple<PointType, ushort>(PointType.DIGITAL_OUTPUT, address), value);
 
