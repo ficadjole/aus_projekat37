@@ -81,10 +81,11 @@ namespace ProcessingModule
 
                 int Heating = 0;
 				int Threshold = 57; // prag pozara
-				int Cooling = 4;
-				int Outflow = 10;
+				int Cooling = 4; //koliko hladi za 1s
+                int Outflow = 10; //koliko vode istekne za 1s
 
-                if (points[1].RawValue == 1)
+
+                if (points[1].RawValue != 0)
 				{
 					if(inicijalnaTemperaturaVazduha < 30)
 					{
@@ -106,37 +107,54 @@ namespace ProcessingModule
 
 				if (trenutnaTemperaturaVazduha > Threshold)
 				{
-					if (points[1].RawValue != 0) {
-                        processingManager.ExecuteWriteCommand(points[1].ConfigItem, configuration.GetTransactionId(), configuration.UnitAddress, 2002, 0);
+					if (points[1].RawValue != 0)
+					{
+						processingManager.ExecuteWriteCommand(points[1].ConfigItem, configuration.GetTransactionId(), configuration.UnitAddress, 2002, 0);
 
-                    }
-                    processingManager.ExecuteWriteCommand(points[0].ConfigItem, configuration.GetTransactionId(), configuration.UnitAddress, 2000, 1);
+					}
+
+					if (points[0].RawValue != 1)
+					{
+						processingManager.ExecuteWriteCommand(points[0].ConfigItem, configuration.GetTransactionId(), configuration.UnitAddress, 2000, 1);
+					}
 
 				}
-				else if(trenutnaTemperaturaVazduha < Threshold || points[2].RawValue < 10) {
-					if (points[0].RawValue != 0) {
-                        processingManager.ExecuteWriteCommand(points[0].ConfigItem, configuration.GetTransactionId(), configuration.UnitAddress, 2000, 0);
-                    }
+				
 
-                }
-
-                if (points[0].RawValue == 1 && trenutniNivoVode >= 10)
+				if (points[0].RawValue == 1 && trenutniNivoVode >= 10)
 				{
 					trenutniNivoVode -= Outflow;
 					trenutnaTemperaturaVazduha -= Cooling;
 
-				}
-
-                if (trenutniNivoVode != inicijalniNivoVode)
+				}else if (points[0].RawValue == 1 && trenutniNivoVode < 10)
                 {
-                    //promena iz egu u raw da bismo mogli da ga upisemo u simulaciju
+					trenutniNivoVode -= inicijalniNivoVode; //ovo je kada su vrednosti vode od 1 do 9
+					trenutnaTemperaturaVazduha = (int)(trenutnaTemperaturaVazduha - (trenutnaTemperaturaVazduha / 10) * Cooling);
+                    //ovo je razmera tako sto je 100:10 = x : trenutanNivoVode
+                    //x = (100*trenutanNivoVode)/10
+                    //zatim procenat od 10 koji imamo u vodi cemo pomnoziti sa Cooling i dobiti novu temp koju treba da oduzmemo
 
-                    trenutniNivoVode = (int)eguConverter.ConvertToRaw(points[2].ConfigItem.ScaleFactor, points[2].ConfigItem.Deviation, trenutniNivoVode);
-                    processingManager.ExecuteWriteCommand(points[2].ConfigItem, configuration.GetTransactionId(), configuration.UnitAddress, 1000, trenutniNivoVode);
                 }
 
+				if (trenutniNivoVode == 0)
+				{
+					if (points[0].RawValue != 0)
+					{
+						processingManager.ExecuteWriteCommand(points[0].ConfigItem, configuration.GetTransactionId(), configuration.UnitAddress, 2000, 0);
+					}
 
-                if (trenutnaTemperaturaVazduha != inicijalnaTemperaturaVazduha)
+				}
+
+				if (trenutniNivoVode != inicijalniNivoVode)
+				{
+					//promena iz egu u raw da bismo mogli da ga upisemo u simulaciju
+
+					trenutniNivoVode = (int)eguConverter.ConvertToRaw(points[2].ConfigItem.ScaleFactor, points[2].ConfigItem.Deviation, trenutniNivoVode);
+					processingManager.ExecuteWriteCommand(points[2].ConfigItem, configuration.GetTransactionId(), configuration.UnitAddress, 1000, trenutniNivoVode);
+				}
+
+
+				if (trenutnaTemperaturaVazduha != inicijalnaTemperaturaVazduha)
 				{
 					//promena iz egu u raw da bismo mogli da ga upisemo u simulaciju
 

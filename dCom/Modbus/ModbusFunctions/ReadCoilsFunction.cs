@@ -63,7 +63,6 @@ namespace Modbus.ModbusFunctions
                 }
             }
             return d;
-            throw new NotImplementedException();
         }
     }
 }
