@@ -54,7 +54,7 @@ namespace Modbus.ModbusFunctions
             {
                 for (int j = 0; j < 8; j++)
                 {
-                    if (paramCom.Quantity < (j + i * 8)) { break; }
+                    if (paramCom.Quantity <= (j + i * 8)) { break; }
 
                     ushort v = (ushort)(response[9 + i] & (byte)0x1);
                     response[9 + i] /= 2; 

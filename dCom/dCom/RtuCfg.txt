@@ -2,7 +2,7 @@ STA 15
 TCP 25252
 
 
-DO_REG  1 2000   0  0   1    0    DO  @StanjeVentila # # # #   # 1 #   #   #
-DO_REG  1 2002   0  0   1    0    DO  @StanjeGrejaca # # # #   # 1 #   #   #
-HR_INT  1 1000   0  0   800  650  AO  @NivoVode      5 1 0 700 50 # 650 100 #
-HR_INT  1 1001   0  0   125   22   AO  @TempVazduha   5 1 0 100  5 # 45  10  #
+DO_REG  1 2000   0  0   1    0    DO  @StanjeVentila # # # #   # 1 #   #     #
+DO_REG  1 2002   0  0   1    0    DO  @StanjeGrejaca # # # #   # 1 #   #     #
+HR_INT  1 1000   0  0   800  650  AO  @NivoVode      5 1 0 700 50 # 650 100  #
+HR_INT  1 1001   0  0   125   22   AO  @TempVazduha  5 1 0 100  5 # 45  10   #
